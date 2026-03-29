@@ -14,8 +14,12 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_API_KEY not set" });
+  // Use server env key if set, otherwise accept from request body (for personal use)
+  const apiKey = process.env.ANTHROPIC_API_KEY || req.body._apiKey;
+  if (!apiKey) return res.status(500).json({ error: "No API key provided" });
+
+  // Strip _apiKey before forwarding to Anthropic
+  const { _apiKey, ...body } = req.body;
 
   try {
     const upstream = await fetch("https://api.anthropic.com/v1/messages", {
@@ -25,7 +29,7 @@ module.exports = async function handler(req, res) {
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     });
     const data = await upstream.json();
     return res.status(upstream.status).json(data);
