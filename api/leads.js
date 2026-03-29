@@ -62,7 +62,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === "PATCH") {
       const { id, status } = req.body;
-      await sql`UPDATE leads SET status = ${status} WHERE id = ${id}`;
+      const updates = status !== undefined ? await sql`UPDATE leads SET status = ${status} WHERE id = ${id}` : await sql`UPDATE leads SET email = ${req.body.email} WHERE id = ${id}`;
       const rows = await sql`SELECT * FROM leads ORDER BY score DESC, added DESC`;
       return res.status(200).json({ leads: rows });
     }
