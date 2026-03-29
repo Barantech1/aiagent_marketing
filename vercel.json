@@ -1,7 +1,9 @@
 {
   "rewrites": [
-    { "source": "/api/proxy",  "destination": "/api/proxy.js"  },
-    { "source": "/api/enrich", "destination": "/api/enrich.js" },
-    { "source": "/api/leads",  "destination": "/api/leads.js"  }
+    { "source": "/api/proxy",        "destination": "/api/proxy.js"        },
+    { "source": "/api/enrich",       "destination": "/api/enrich.js"       },
+    { "source": "/api/enrich-email", "destination": "/api/enrich-email.js" },
+    { "source": "/api/leads",        "destination": "/api/leads.js"        },
+    { "source": "/api/auth",         "destination": "/api/auth.js"         }
   ]
 }
