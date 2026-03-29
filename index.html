@@ -87,6 +87,12 @@
   thead th.sort-desc .sort-icon::after { content: "\25BC"; opacity: 1; }
   thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: "\21C5"; }
   .results-count { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+  thead th { cursor: default !important; }
+  .th-inner { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .col-filter { width: 100%; margin-top: 5px; font-family: var(--font); font-size: 11px; padding: 3px 6px; border-radius: 4px; border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); outline: none; display: block; cursor: text; }
+  .col-filter:focus { border-color: var(--text); }
+  .col-filter-select { width: 100%; margin-top: 5px; font-family: var(--font); font-size: 11px; padding: 3px 4px; border-radius: 4px; border: 0.5px solid var(--border-md); background: var(--bg); color: var(--text); outline: none; display: block; cursor: pointer; }
+  thead th { vertical-align: top; }
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
   @media (max-width: 540px) { .row { grid-template-columns: 1fr; } }
@@ -273,31 +279,11 @@
           <div class="metric"><div class="metric-label">Contacted</div><div class="metric-value" id="m-contacted">0</div></div>
           <div class="metric"><div class="metric-label">Won</div><div class="metric-value" id="m-won">0</div></div>
         </div>
-        <div class="table-controls">
-          <input class="filter-input" id="filter-search" placeholder="Search name, company, email..." oninput="renderLeads()">
-          <select class="filter-select" id="filter-status" onchange="renderLeads()">
-            <option value="">All statuses</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="won">Won</option>
-            <option value="lost">Lost</option>
-          </select>
-          <select class="filter-select" id="filter-source" onchange="renderLeads()">
-            <option value="">All sources</option>
-            <option value="apollo">Apollo</option>
-            <option value="ai">AI</option>
-          </select>
-          <select class="filter-select" id="filter-score" onchange="renderLeads()">
-            <option value="0">All scores</option>
-            <option value="75">High fit (75+)</option>
-            <option value="50">Medium fit (50+)</option>
-          </select>
-          <span class="results-count" id="results-count"></span>
-        </div>
         <div class="action-row" style="margin-bottom:12px;">
           <button class="btn" onclick="exportCSV()">Export to CSV &darr;</button>
           <button class="btn" onclick="loadLeads()">&#8635; Refresh</button>
           <div class="status-msg" id="export-status"></div>
+          <span class="results-count" id="results-count"></span>
         </div>
         <div class="leads-wrap" id="leads-container">
           <div class="empty">Loading leads...</div>
@@ -497,15 +483,24 @@ function sortBy(col) {
 }
 
 function getFiltered() {
-  var search = (document.getElementById("filter-search") ? document.getElementById("filter-search").value : "").toLowerCase();
-  var status = document.getElementById("filter-status") ? document.getElementById("filter-status").value : "";
-  var source = document.getElementById("filter-source") ? document.getElementById("filter-source").value : "";
-  var minScore = parseInt(document.getElementById("filter-score") ? document.getElementById("filter-score").value : "0") || 0;
+  function v(id) { var el = document.getElementById(id); return el ? el.value.toLowerCase() : ""; }
+  var fName    = v("cf-name");
+  var fCompany = v("cf-company");
+  var fEmail   = v("cf-email");
+  var fSegment = v("cf-segment");
+  var fRegion  = v("cf-region");
+  var fStatus  = v("cf-status");
+  var fSource  = v("cf-source");
+  var minScore = parseInt(v("cf-score")) || 0;
   return leads
     .filter(function(l) {
-      if (search && ![l.name,l.company,l.email,l.title,l.region].some(function(v){return (v||"").toLowerCase().indexOf(search)>-1;})) return false;
-      if (status && (l.status||"new") !== status) return false;
-      if (source && (l.source||"ai") !== source) return false;
+      if (fName    && (l.name||"").toLowerCase().indexOf(fName)<0) return false;
+      if (fCompany && (l.company||"").toLowerCase().indexOf(fCompany)<0) return false;
+      if (fEmail   && (l.email||"").toLowerCase().indexOf(fEmail)<0) return false;
+      if (fSegment && (l.segment||"").toLowerCase().indexOf(fSegment)<0) return false;
+      if (fRegion  && (l.region||"").toLowerCase().indexOf(fRegion)<0) return false;
+      if (fStatus  && (l.status||"new") !== fStatus) return false;
+      if (fSource  && (l.source||"ai") !== fSource) return false;
       if ((parseInt(l.score)||0) < minScore) return false;
       return true;
     })
@@ -528,17 +523,24 @@ function renderLeads() {
   var countEl = document.getElementById("results-count");
   if (countEl) countEl.textContent = filtered.length + " of " + leads.length + " leads";
   if (!filtered.length) { c.innerHTML = '<div class="empty">No leads match your filters.</div>'; return; }
+  var fName = document.getElementById("cf-name") ? document.getElementById("cf-name").value : "";
+  var fCompany = document.getElementById("cf-company") ? document.getElementById("cf-company").value : "";
+  var fEmail = document.getElementById("cf-email") ? document.getElementById("cf-email").value : "";
+  var fRegion = document.getElementById("cf-region") ? document.getElementById("cf-region").value : "";
+  var fStatus = document.getElementById("cf-status") ? document.getElementById("cf-status").value : "";
+  var fSource = document.getElementById("cf-source") ? document.getElementById("cf-source").value : "";
+  var fScore = document.getElementById("cf-score") ? document.getElementById("cf-score").value : "0";
   c.innerHTML = '<table><thead><tr>'
-    +'<th style="width:15%" class="'+thCls("name")+'" onclick="sortBy(\'name\')">Contact<span class="sort-icon"></span></th>'
-    +'<th style="width:13%" class="'+thCls("company")+'" onclick="sortBy(\'company\')">Company<span class="sort-icon"></span></th>'
-    +'<th style="width:14%" class="'+thCls("email")+'" onclick="sortBy(\'email\')">Email<span class="sort-icon"></span></th>'
-    +'<th style="width:10%" class="'+thCls("segment")+'" onclick="sortBy(\'segment\')">Segment<span class="sort-icon"></span></th>'
-    +'<th style="width:8%" class="'+thCls("region")+'" onclick="sortBy(\'region\')">Region<span class="sort-icon"></span></th>'
-    +'<th style="width:8%" class="'+thCls("boats_per_year")+'" onclick="sortBy(\'boats_per_year\')">Boats/yr<span class="sort-icon"></span></th>'
-    +'<th style="width:17%">Why Cruzo fits</th>'
-    +'<th style="width:6%" class="'+thCls("score")+'" onclick="sortBy(\'score\')">Score<span class="sort-icon"></span></th>'
-    +'<th style="width:8%" class="'+thCls("status")+'" onclick="sortBy(\'status\')">Status<span class="sort-icon"></span></th>'
-    +'<th style="width:4%"></th>'
+    +'<th style="width:15%"><div class="th-inner" onclick="sortBy(\'name\')">Contact<span class="sort-icon"></span></div><input id="cf-name" class="col-filter" placeholder="Filter..." value="'+fName+'" oninput="renderLeads()"></th>'
+    +'<th style="width:13%"><div class="th-inner" onclick="sortBy(\'company\')">Company<span class="sort-icon"></span></div><input id="cf-company" class="col-filter" placeholder="Filter..." value="'+fCompany+'" oninput="renderLeads()"></th>'
+    +'<th style="width:14%"><div class="th-inner" onclick="sortBy(\'email\')">Email<span class="sort-icon"></span></div><input id="cf-email" class="col-filter" placeholder="Filter..." value="'+fEmail+'" oninput="renderLeads()"></th>'
+    +'<th style="width:10%"><div class="th-inner" onclick="sortBy(\'segment\')">Segment<span class="sort-icon"></span></div><input id="cf-segment" class="col-filter" placeholder="Filter..." oninput="renderLeads()"></th>'
+    +'<th style="width:8%"><div class="th-inner" onclick="sortBy(\'region\')">Region<span class="sort-icon"></span></div><input id="cf-region" class="col-filter" placeholder="Filter..." value="'+fRegion+'" oninput="renderLeads()"></th>'
+    +'<th style="width:8%"><div class="th-inner" onclick="sortBy(\'boats_per_year\')">Boats/yr<span class="sort-icon"></span></div></th>'
+    +'<th style="width:16%">Why Cruzo fits</th>'
+    +'<th style="width:7%"><div class="th-inner" onclick="sortBy(\'score\')">Score<span class="sort-icon"></span></div><select id="cf-score" class="col-filter-select" onchange="renderLeads()"><option value="0">All</option><option value="75" '+( fScore==="75"?"selected":"")+'>75+</option><option value="50" '+( fScore==="50"?"selected":"")+'>50+</option></select></th>'
+    +'<th style="width:9%"><div class="th-inner" onclick="sortBy(\'status\')">Status<span class="sort-icon"></span></div><select id="cf-status" class="col-filter-select" onchange="renderLeads()"><option value="">All</option><option value="new" '+( fStatus==="new"?"selected":"")+'>New</option><option value="contacted" '+( fStatus==="contacted"?"selected":"")+'>Contacted</option><option value="won" '+( fStatus==="won"?"selected":"")+'>Won</option><option value="lost" '+( fStatus==="lost"?"selected":"")+'>Lost</option></select></th>'
+    +'<th style="width:4%"><select id="cf-source" class="col-filter-select" onchange="renderLeads()" title="Source"><option value="">All</option><option value="apollo" '+( fSource==="apollo"?"selected":"")+'>Apollo</option><option value="ai" '+( fSource==="ai"?"selected":"")+'>AI</option></select></th>'
     +'</tr></thead><tbody>'
     +filtered.map(function(l) {
       const domain = (l.website||'').replace(/https?:\/\//,'').split('/')[0];
