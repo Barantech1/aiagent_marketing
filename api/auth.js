@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { password } = req.body;
-  const correctPassword = process.env.APP_PASSWORD || "barantech2024";
+  const correctPassword = process.env.APP_PASSWORD || "barancruzo2026";
 
   if (password !== correctPassword) {
     return res.status(401).json({ error: "Incorrect password" });
