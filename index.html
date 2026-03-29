@@ -6,245 +6,101 @@
 <title>Cruzo Lead Generation Agent — Barantech</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #ffffff;
-    --bg-secondary: #f5f5f3;
-    --bg-tertiary: #efefec;
-    --text: #1a1a1a;
-    --text-secondary: #6b6b6b;
-    --text-tertiary: #9b9b9b;
-    --border: rgba(0,0,0,0.12);
-    --border-md: rgba(0,0,0,0.22);
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --gap: 12px;
+    --bg: #ffffff; --bg-secondary: #f5f5f3; --bg-tertiary: #efefec;
+    --text: #1a1a1a; --text-secondary: #6b6b6b; --text-tertiary: #9b9b9b;
+    --border: rgba(0,0,0,0.12); --border-md: rgba(0,0,0,0.22);
+    --radius-md: 8px; --radius-lg: 12px; --gap: 12px;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-mono: 'SF Mono', 'Fira Code', monospace;
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #1c1c1c;
-      --bg-secondary: #262626;
-      --bg-tertiary: #2e2e2e;
-      --text: #f0f0f0;
-      --text-secondary: #a0a0a0;
-      --text-tertiary: #6a6a6a;
-      --border: rgba(255,255,255,0.1);
-      --border-md: rgba(255,255,255,0.2);
+      --bg: #1c1c1c; --bg-secondary: #262626; --bg-tertiary: #2e2e2e;
+      --text: #f0f0f0; --text-secondary: #a0a0a0; --text-tertiary: #6a6a6a;
+      --border: rgba(255,255,255,0.1); --border-md: rgba(255,255,255,0.2);
     }
   }
-
-  body {
-    font-family: var(--font);
-    background: var(--bg-tertiary);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  header {
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  header .brand { display: flex; align-items: center; gap: 12px; }
-  header .logo {
-    width: 36px; height: 36px; border-radius: var(--radius-md);
-    background: #0a0a0a; display: flex; align-items: center;
-    justify-content: center; font-size: 16px; color: #fff; font-weight: 700;
-  }
-  header .brand-text .sup {
-    font-size: 10px; font-weight: 600; color: var(--text-tertiary);
-    text-transform: uppercase; letter-spacing: 0.08em;
-  }
-  header .brand-text h1 { font-size: 17px; font-weight: 600; color: var(--text); }
-
-
-
-  .panel {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  }
-
-  .tabs {
-    display: flex;
-    border-bottom: 0.5px solid var(--border);
-    background: var(--bg-secondary);
-    overflow-x: auto;
-  }
-  .tab {
-    background: none; border: none; padding: 12px 20px;
-    font-size: 14px; color: var(--text-secondary); cursor: pointer;
-    border-bottom: 2px solid transparent; margin-bottom: -0.5px;
-    font-family: var(--font); white-space: nowrap; font-weight: 400;
-  }
+  body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text); min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 1150px; margin: 0 auto; }
+  header { margin-bottom: 2rem; display: flex; align-items: center; gap: 12px; }
+  .logo { width: 36px; height: 36px; border-radius: var(--radius-md); background: #0a0a0a; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; font-weight: 700; flex-shrink: 0; }
+  .brand-text .sup { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; }
+  .brand-text h1 { font-size: 17px; font-weight: 600; }
+  .panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .tabs { display: flex; border-bottom: 0.5px solid var(--border); background: var(--bg-secondary); overflow-x: auto; }
+  .tab { background: none; border: none; padding: 12px 20px; font-size: 14px; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -0.5px; font-family: var(--font); white-space: nowrap; }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
-
   .section { display: none; padding: 1.5rem; }
   .section.active { display: block; }
-
-  .card {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.25rem;
-    margin-bottom: var(--gap);
-  }
-
-  label {
-    font-size: 13px; color: var(--text-secondary);
-    display: block; margin-bottom: 6px; margin-top: 14px;
-  }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: var(--gap); }
+  label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px; margin-top: 14px; }
   label:first-child { margin-top: 0; }
-
-  input[type=text], textarea, select {
-    width: 100%; font-family: var(--font); font-size: 14px;
-    padding: 8px 12px; border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-md);
-    background: var(--bg-secondary); color: var(--text);
-    outline: none; transition: border-color 0.15s;
-  }
-  input[type=text]:focus, textarea:focus, select:focus {
-    border-color: var(--text);
-  }
+  input[type=text], textarea, select { width: 100%; font-family: var(--font); font-size: 14px; padding: 8px 12px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text); outline: none; transition: border-color 0.15s; }
+  input[type=text]:focus, textarea:focus, select:focus { border-color: var(--text); }
   textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
-  select { cursor: pointer; }
-
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
   @media (max-width: 540px) { .row { grid-template-columns: 1fr; } }
-
   .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .chip {
-    padding: 5px 13px; border-radius: 99px; font-size: 12px;
-    border: 0.5px solid var(--border-md); cursor: pointer;
-    color: var(--text-secondary); background: transparent;
-    font-family: var(--font); transition: all 0.15s;
-  }
+  .chip { padding: 5px 13px; border-radius: 99px; font-size: 12px; border: 0.5px solid var(--border-md); cursor: pointer; color: var(--text-secondary); background: transparent; font-family: var(--font); transition: all 0.15s; }
   .chip:hover { border-color: var(--text); color: var(--text); }
   .chip.active { background: var(--text); color: var(--bg); border-color: transparent; }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 9px 18px; border-radius: var(--radius-md);
-    font-size: 14px; font-weight: 500; cursor: pointer;
-    font-family: var(--font); border: 0.5px solid var(--border-md);
-    background: transparent; color: var(--text); transition: all 0.15s;
-  }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font); border: 0.5px solid var(--border-md); background: transparent; color: var(--text); transition: all 0.15s; }
   .btn:hover { background: var(--bg-secondary); }
-  .btn-primary {
-    background: var(--text); color: var(--bg); border-color: transparent;
-  }
+  .btn-primary { background: var(--text); color: var(--bg); border-color: transparent; }
   .btn-primary:hover { opacity: 0.85; background: var(--text); }
+  .btn-danger { color: #A32D2D; border-color: rgba(163,45,45,0.3); }
+  .btn-danger:hover { background: #FCEBEB; }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
   .action-row { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
-
-  .spinner {
-    width: 14px; height: 14px; border: 2px solid currentColor;
-    border-top-color: transparent; border-radius: 50%;
-    animation: spin 0.7s linear infinite; display: inline-block;
-  }
+  .spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .status-msg {
-    font-size: 13px; color: var(--text-secondary);
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .metric-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: var(--gap); margin-bottom: 1.5rem;
-  }
-  .metric {
-    background: var(--bg-secondary); border-radius: var(--radius-md); padding: 1rem;
-  }
+  .status-msg { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); margin-bottom: 1.5rem; }
+  @media (max-width: 540px) { .metric-grid { grid-template-columns: repeat(2,1fr); } }
+  .metric { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 1rem; }
   .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
   .metric-value { font-size: 26px; font-weight: 600; }
-
   .leads-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 0.5px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
-  thead th {
-    text-align: left; font-weight: 500; font-size: 12px;
-    color: var(--text-secondary); padding: 10px 12px;
-    border-bottom: 0.5px solid var(--border);
-    background: var(--bg-secondary);
-  }
-  tbody td {
-    padding: 10px 12px; border-bottom: 0.5px solid var(--border);
-    vertical-align: top; word-break: break-word;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; min-width: 960px; }
+  thead th { text-align: left; font-weight: 500; font-size: 12px; color: var(--text-secondary); padding: 10px 12px; border-bottom: 0.5px solid var(--border); background: var(--bg-secondary); }
+  tbody td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); vertical-align: top; word-break: break-word; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: var(--bg-secondary); }
-
-  .score-badge {
-    display: inline-block; padding: 2px 8px;
-    border-radius: var(--radius-md); font-size: 12px; font-weight: 500;
-  }
+  .score-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-md); font-size: 12px; font-weight: 500; }
   .score-high { background: #EAF3DE; color: #3B6D11; }
   .score-mid  { background: #FAEEDA; color: #854F0B; }
   .score-low  { background: #FCEBEB; color: #A32D2D; }
-
-  .tag {
-    display: inline-block; background: var(--bg-secondary);
-    border: 0.5px solid var(--border); border-radius: var(--radius-md);
-    padding: 2px 8px; font-size: 11px; color: var(--text-secondary);
-  }
-
-  .email-preview {
-    background: var(--bg-secondary); border-radius: var(--radius-md);
-    padding: 1rem; font-size: 13px; line-height: 1.75;
-    white-space: pre-wrap; min-height: 140px;
-  }
-  .email-subject-row {
-    font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;
-  }
+  .tag { display: inline-block; background: var(--bg-secondary); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 2px 8px; font-size: 11px; color: var(--text-secondary); }
+  .source-badge { font-size: 10px; padding: 1px 5px; border-radius: 4px; background: var(--bg-tertiary); color: var(--text-tertiary); border: 0.5px solid var(--border); }
+  .status-select { width: auto; font-size: 11px; padding: 3px 6px; border-radius: 99px; cursor: pointer; }
+  .status-new { border-color: #185FA5; color: #185FA5; background: #E6F1FB; }
+  .status-contacted { border-color: #854F0B; color: #854F0B; background: #FAEEDA; }
+  .status-won { border-color: #3B6D11; color: #3B6D11; background: #EAF3DE; }
+  .status-lost { border-color: #A32D2D; color: #A32D2D; background: #FCEBEB; }
+  .email-preview { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 1rem; font-size: 13px; line-height: 1.75; white-space: pre-wrap; min-height: 140px; }
+  .email-subject-row { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
   .email-subject-row span { color: var(--text); font-weight: 500; }
-
-  .cal-row {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border);
-  }
+  .cal-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
   .cal-row:last-child { border-bottom: none; }
   .cal-name { font-size: 14px; font-weight: 500; }
   .cal-detail { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
-
-  .empty {
-    text-align: center; padding: 2.5rem;
-    color: var(--text-tertiary); font-size: 14px;
-  }
-
-  .section-title {
-    font-size: 13px; font-weight: 500;
-    color: var(--text-secondary); margin-bottom: 12px;
-  }
+  .empty { text-align: center; padding: 2.5rem; color: var(--text-tertiary); font-size: 14px; }
+  .info-box { background: #E6F1FB; border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: #185FA5; margin-top: 12px; line-height: 1.5; }
+  .source-toggle { display: flex; gap: 8px; margin-top: 8px; }
+  .source-btn { padding: 6px 14px; border-radius: var(--radius-md); font-size: 13px; border: 0.5px solid var(--border-md); cursor: pointer; font-family: var(--font); background: transparent; color: var(--text-secondary); transition: all 0.15s; }
+  .source-btn.active { background: var(--text); color: var(--bg); border-color: transparent; }
 </style>
 </head>
 <body>
 <div class="container">
-
   <header>
-    <div class="brand">
-      <div class="logo">B</div>
-      <div class="brand-text">
-        <div class="sup">Barantech Marine</div>
-        <h1>Cruzo Lead Generation Agent</h1>
-      </div>
+    <div class="logo">B</div>
+    <div class="brand-text">
+      <div class="sup">Barantech Marine</div>
+      <h1>Cruzo Lead Generation Agent</h1>
     </div>
-
   </header>
 
   <div class="panel">
@@ -255,8 +111,15 @@
       <button class="tab" onclick="switchTab('calendar')">Schedule</button>
     </div>
 
-    <!-- FIND LEADS -->
     <div id="tab-search" class="section active">
+      <div class="card">
+        <label>Lead source</label>
+        <div class="source-toggle">
+          <button class="source-btn active" id="src-apollo" onclick="setSource('apollo')">Apollo + Hunter (real contacts)</button>
+          <button class="source-btn" id="src-ai" onclick="setSource('ai')">AI generated</button>
+        </div>
+        <div id="apollo-info" class="info-box">Pulls real verified contacts from Apollo.io and finds emails via Hunter.io. Already-seen companies are skipped automatically.</div>
+      </div>
       <div class="card">
         <label>Lead segment</label>
         <div class="chip-row" id="segments">
@@ -301,35 +164,35 @@
           <option>Sales / Business Development</option>
         </select>
         <label>Qualifying criteria (optional)</label>
-        <textarea id="criteria" placeholder="e.g. Already using NMEA 2000, building 30–80ft boats, looking to modernise helm controls..."></textarea>
+        <textarea id="criteria" placeholder="e.g. Already using NMEA 2000, building 30-80ft boats, looking to modernise helm controls..."></textarea>
       </div>
       <div class="action-row">
-        <button class="btn btn-primary" id="search-btn" onclick="findLeads()">Find leads →</button>
+        <button class="btn btn-primary" id="search-btn" onclick="findLeads()">Find leads &rarr;</button>
         <div class="status-msg" id="search-status"></div>
       </div>
     </div>
 
-    <!-- LEADS LIST -->
     <div id="tab-leads" class="section">
       <div class="metric-grid">
         <div class="metric"><div class="metric-label">Total leads</div><div class="metric-value" id="m-total">0</div></div>
         <div class="metric"><div class="metric-label">High fit (75+)</div><div class="metric-value" id="m-high">0</div></div>
-        <div class="metric"><div class="metric-label">Emailed</div><div class="metric-value" id="m-emailed">0</div></div>
+        <div class="metric"><div class="metric-label">Contacted</div><div class="metric-value" id="m-contacted">0</div></div>
+        <div class="metric"><div class="metric-label">Won</div><div class="metric-value" id="m-won">0</div></div>
       </div>
-      <div class="action-row" style="margin-bottom: 12px;">
-        <button class="btn" id="export-btn" onclick="exportCSV()">Export to CSV ↓</button>
+      <div class="action-row" style="margin-bottom:12px;">
+        <button class="btn" onclick="exportCSV()">Export to CSV &darr;</button>
+        <button class="btn" onclick="loadLeads()">&#8635; Refresh</button>
         <div class="status-msg" id="export-status"></div>
       </div>
       <div class="leads-wrap" id="leads-container">
-        <div class="empty">No leads yet — use "Find leads" to generate your first batch.</div>
+        <div class="empty">Loading leads...</div>
       </div>
     </div>
 
-    <!-- DRAFT EMAIL -->
     <div id="tab-email" class="section">
       <div class="card">
         <label>Select lead</label>
-        <select id="lead-select"><option value="">— choose a lead —</option></select>
+        <select id="lead-select"><option value="">- choose a lead -</option></select>
         <label>Cruzo product to highlight</label>
         <select id="product">
           <option>Cruzo Panel Series (glass piezo control panels)</option>
@@ -349,299 +212,299 @@
         </select>
       </div>
       <div class="action-row">
-        <button class="btn btn-primary" id="email-btn" onclick="draftEmail()">Draft email →</button>
+        <button class="btn btn-primary" id="email-btn" onclick="draftEmail()">Draft email &rarr;</button>
         <div class="status-msg" id="email-status"></div>
       </div>
-      <div style="margin-top: 1.5rem; display:none;" id="email-output-wrap">
+      <div style="margin-top:1.5rem;display:none;" id="email-output-wrap">
         <div class="email-subject-row">Subject: <span id="email-subject"></span></div>
         <div class="email-preview" id="email-body"></div>
-        <div class="action-row" style="margin-top: 12px;">
-          <button class="btn btn-primary" id="send-btn" onclick="sendEmail()" disabled>Send via Gmail →</button>
+        <div class="action-row" style="margin-top:12px;">
+          <button class="btn btn-primary" id="send-btn" onclick="openGmail()" disabled>Open in Gmail &rarr;</button>
           <div class="status-msg" id="send-status"></div>
         </div>
       </div>
     </div>
 
-    <!-- CALENDAR -->
     <div id="tab-calendar" class="section">
       <div class="card">
         <label>Select lead</label>
-        <select id="cal-lead-select"><option value="">— choose a lead —</option></select>
+        <select id="cal-lead-select"><option value="">- choose a lead -</option></select>
         <div class="row">
-          <div>
-            <label>Date</label>
-            <input type="text" id="cal-date" placeholder="e.g. April 10, 2026">
-          </div>
-          <div>
-            <label>Time</label>
-            <input type="text" id="cal-time" placeholder="e.g. 10:00 AM">
-          </div>
+          <div><label>Date</label><input type="text" id="cal-date" placeholder="e.g. April 10, 2026"></div>
+          <div><label>Time</label><input type="text" id="cal-time" placeholder="e.g. 10:00 AM"></div>
         </div>
         <label>Meeting type</label>
         <select id="cal-purpose">
           <option>Discovery call</option>
-          <option>Product demo — Cruzo Panel</option>
-          <option>Product demo — Full System</option>
+          <option>Product demo - Cruzo Panel</option>
+          <option>Product demo - Full System</option>
           <option>Technical integration review</option>
           <option>OEM partnership discussion</option>
           <option>Follow-up / proposal review</option>
         </select>
       </div>
       <div class="action-row">
-        <button class="btn btn-primary" id="cal-btn" onclick="scheduleFollowUp()">Schedule in Google Calendar →</button>
+        <button class="btn btn-primary" id="cal-btn" onclick="scheduleFollowUp()">Schedule in Google Calendar &rarr;</button>
         <div class="status-msg" id="cal-status"></div>
       </div>
-      <div style="margin-top: 1.5rem;">
-        <div class="section-title">Scheduled follow-ups</div>
-        <div class="card" style="padding: 0 1.25rem;">
-          <div id="cal-list"><div class="empty" style="padding: 1.5rem;">No follow-ups scheduled yet.</div></div>
+      <div style="margin-top:1.5rem;">
+        <div style="font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:12px;">Scheduled follow-ups</div>
+        <div class="card" style="padding:0 1.25rem;">
+          <div id="cal-list"><div class="empty" style="padding:1.5rem;">No follow-ups scheduled yet.</div></div>
         </div>
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
-const PROXY = '/api/proxy';
-const MODEL = 'claude-sonnet-4-20250514';
+const PROXY    = '/api/proxy';
+const ENRICH   = '/api/enrich';
+const LEADS_DB = '/api/leads';
+const MODEL    = 'claude-sonnet-4-20250514';
+let leads = [], currentEmail = null, currentEmailLead = null, followUps = [], leadSource = 'apollo';
 
-let leads = [], emailedCount = 0, currentEmail = null, currentEmailLead = null, followUps = [];
+const CTX = `Barantech (marine.barantech.com) makes the Cruzo Boat Control System:
+- Cruzo Panel Series: glass piezo touch panels, customisable, NMEA 2000 compatible
+- Cruzo Smart Relay: NMEA 2000 certified, 4x10A+4x20A relays, IP66, works with Garmin EmpirBus/CZone/Raymarine
+- Cruzo Connect: mobile app iOS & Android; Solo: sealed glass piezo switch; Boat Guard: retrofit piezo
+- MarineTouch 4Key/Pro6: aluminium panels; Windlass Switch: marine-grade piezo for windlass
+Ideal for: boat manufacturers, yacht builders, OEMs, refit yards, system integrators, charter operators, dealers.`;
 
-const BARANTECH_CONTEXT = `Barantech (marine.barantech.com) makes the Cruzo Boat Control System — a smart boat control ecosystem including:
-- Cruzo Panel Series: sleek glass piezo touch control panels, fully customisable, NMEA 2000 compatible
-- Cruzo Smart Relay: NMEA 2000 certified relay module, 4x10A + 4x20A relays, IP66, integrates with Garmin EmpirBus, CZone, Raymarine
-- Cruzo Connect: mobile app (iOS & Android) for full vessel control
-- Solo: single sealed glass piezo switch with stainless steel housing
-- Boat Guard: retrofit piezo switch replacing 22mm pushbuttons with interchangeable relay modules
-- MarineTouch 4Key / Pro6: aluminium multi-button switch panels
-- Windlass Switch: marine-grade piezo switch for anchor windlass
-Ideal customers: boat manufacturers, yacht builders, OEMs, refit yards, marine system integrators, charter operators, marine dealers. Supports new builds and retrofit. Key differentiators: premium aesthetics, NMEA 2000 native, IP66-rated, compatible with Garmin EmpirBus / CZone / Raymarine, fully customisable.`;
+window.onload = () => loadLeads();
 
-
+function setSource(s) {
+  leadSource = s;
+  document.getElementById('src-apollo').classList.toggle('active', s==='apollo');
+  document.getElementById('src-ai').classList.toggle('active', s==='ai');
+  document.getElementById('apollo-info').style.display = s==='apollo' ? 'block' : 'none';
+}
 
 function switchTab(t) {
   document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', ['search','leads','email','calendar'][i]===t));
   document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
+  if (t==='leads') loadLeads();
 }
+
 function toggleChip(el) { el.classList.toggle('active'); }
+
 function setStatus(id, msg, loading=false) {
   const el = document.getElementById(id);
-  el.innerHTML = loading ? `<div class="spinner"></div> ${msg}` : msg;
+  el.innerHTML = loading ? '<div class="spinner"></div> '+msg : msg;
 }
+
 function scoreBadge(score) {
-  const n = parseInt(score);
-  const cls = n >= 75 ? 'score-high' : n >= 50 ? 'score-mid' : 'score-low';
-  return `<span class="score-badge ${cls}">${score}</span>`;
+  const n = parseInt(score)||0;
+  const cls = n>=75?'score-high':n>=50?'score-mid':'score-low';
+  return '<span class="score-badge '+cls+'">'+(n||'?')+'</span>';
 }
+
+function statusSelect(status, id) {
+  const opts = ['new','contacted','won','lost'].map(v =>
+    '<option value="'+v+'"'+(status===v?' selected':'')+'>'+v.charAt(0).toUpperCase()+v.slice(1)+'</option>'
+  ).join('');
+  return '<select class="status-select status-'+(status||'new')+'" onchange="updateStatus(\''+id+'\',this.value)">'+opts+'</select>';
+}
+
 function updateMetrics() {
   document.getElementById('m-total').textContent = leads.length;
-  document.getElementById('m-high').textContent = leads.filter(l => parseInt(l.score)>=75).length;
-  document.getElementById('m-emailed').textContent = emailedCount;
+  document.getElementById('m-high').textContent = leads.filter(l=>parseInt(l.score)>=75).length;
+  document.getElementById('m-contacted').textContent = leads.filter(l=>l.status==='contacted').length;
+  document.getElementById('m-won').textContent = leads.filter(l=>l.status==='won').length;
 }
+
 function updateLeadSelects() {
-  const opts = leads.map((l,i) => `<option value="${i}">${l.name} — ${l.company}</option>`).join('');
+  const opts = leads.map((l,i)=>'<option value="'+i+'">'+l.name+' - '+l.company+'</option>').join('');
   ['lead-select','cal-lead-select'].forEach(id => {
-    document.getElementById(id).innerHTML = '<option value="">— choose a lead —</option>' + opts;
+    document.getElementById(id).innerHTML = '<option value="">- choose a lead -</option>'+opts;
   });
 }
+
 function renderLeads() {
   const c = document.getElementById('leads-container');
-  if (!leads.length) { c.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
-  c.innerHTML = `<table>
-    <thead><tr>
-      <th style="width:16%">Contact</th>
-      <th style="width:14%">Company</th>
-      <th style="width:16%">Email</th>
-      <th style="width:11%">Segment</th>
-      <th style="width:9%">Region</th>
-      <th style="width:9%">Boats/yr</th>
-      <th style="width:18%">Why Cruzo fits</th>
-      <th style="width:7%">Score</th>
-    </tr></thead>
-    <tbody>${leads.map(l => `<tr>
-      <td>
-        <div style="font-weight:500;">${l.name}</div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${l.title}</div>
-      </td>
-      <td style="font-size:13px;">${l.company}</td>
-      <td style="font-size:12px;color:var(--text-secondary);word-break:break-all;">${l.email||'—'}</td>
-      <td><span class="tag">${l.segment||''}</span></td>
-      <td style="font-size:12px;">${l.region||''}</td>
-      <td style="font-size:12px;text-align:center;">${l.boats_per_year||'—'}</td>
-      <td style="font-size:12px;line-height:1.5;">${l.fit}</td>
-      <td>${scoreBadge(l.score)}</td>
-    </tr>`).join('')}</tbody>
-  </table>`;
+  if (!leads.length) { c.innerHTML = '<div class="empty">No leads yet - use Find leads to generate your first batch.</div>'; return; }
+  c.innerHTML = '<table><thead><tr>'
+    +'<th style="width:14%">Contact</th>'
+    +'<th style="width:13%">Company</th>'
+    +'<th style="width:15%">Email</th>'
+    +'<th style="width:10%">Segment</th>'
+    +'<th style="width:8%">Region</th>'
+    +'<th style="width:8%">Boats/yr</th>'
+    +'<th style="width:18%">Why Cruzo fits</th>'
+    +'<th style="width:6%">Score</th>'
+    +'<th style="width:8%">Status</th>'
+    +'<th style="width:4%"></th>'
+    +'</tr></thead><tbody>'
+    +leads.map(function(l) {
+      return '<tr>'
+        +'<td><div style="font-weight:500">'+l.name+'</div>'
+        +'<div style="font-size:12px;color:var(--text-secondary);margin-top:2px">'+l.title+'</div>'
+        +(l.linkedin?'<a href="'+l.linkedin+'" target="_blank" style="font-size:11px;color:#185FA5">LinkedIn</a> ':'')
+        +'<span class="source-badge">'+(l.source||'ai')+'</span></td>'
+        +'<td style="font-size:13px">'+l.company
+        +(l.website?'<div style="font-size:11px"><a href="'+(l.website.startsWith('http')?l.website:'https://'+l.website)+'" target="_blank" style="color:var(--text-tertiary)">'+l.website.replace(/https?:\/\//,'')+'</a></div>':'')
+        +'</td>'
+        +'<td style="font-size:12px;color:var(--text-secondary);word-break:break-all">'+(l.email||'&mdash;')+'</td>'
+        +'<td><span class="tag">'+(l.segment||'')+'</span></td>'
+        +'<td style="font-size:12px">'+(l.region||'')+'</td>'
+        +'<td style="font-size:12px;text-align:center">'+(l.boats_per_year||'&mdash;')+'</td>'
+        +'<td style="font-size:12px;line-height:1.5">'+(l.fit||'')+'</td>'
+        +'<td>'+scoreBadge(l.score)+'</td>'
+        +'<td>'+statusSelect(l.status||'new', l.id)+'</td>'
+        +'<td><button class="btn btn-sm btn-danger" onclick="deleteLead(\''+l.id+'\')">x</button></td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table>';
+}
+
+async function loadLeads() {
+  try {
+    const res = await fetch(LEADS_DB);
+    if (res.ok) { leads = await res.json(); renderLeads(); updateLeadSelects(); updateMetrics(); }
+  } catch(e) { console.log('KV unavailable, using in-memory state'); }
+}
+
+function normalise(s) { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+async function saveLeads(newLeads) {
+  try {
+    const res = await fetch(LEADS_DB, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({leads:newLeads}) });
+    if (res.ok) { const d = await res.json(); leads = d.leads; return {added:d.added,skipped:d.skipped}; }
+  } catch(e) {}
+  const existingKeys = new Set(leads.map(l=>normalise(l.company)));
+  const deduped = newLeads.filter(l=>!existingKeys.has(normalise(l.company)));
+  leads = [...leads, ...deduped.map(l=>({...l,id:Date.now()+Math.random(),status:'new',added:new Date().toISOString()}))];
+  return {added:deduped.length, skipped:newLeads.length-deduped.length};
+}
+
+async function deleteLead(id) {
+  try { await fetch(LEADS_DB,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); } catch(e){}
+  leads = leads.filter(l=>l.id!==id);
+  renderLeads(); updateLeadSelects(); updateMetrics();
+}
+
+async function updateStatus(id, status) {
+  try { await fetch(LEADS_DB,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})}); } catch(e){}
+  leads = leads.map(l=>l.id===id?{...l,status}:l);
+  updateMetrics();
+  const sel = document.querySelector('select[onchange*="\''+id+'\'"]');
+  if (sel) { sel.className = 'status-select status-'+status; }
 }
 
 async function callAPI(body) {
-  const res = await fetch(PROXY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `HTTP ${res.status}`);
-  }
+  const res = await fetch(PROXY, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error||'HTTP '+res.status); }
   return res.json();
 }
 
 async function findLeads() {
-  const activeChips = [...document.querySelectorAll('#segments .chip.active')].map(c => c.textContent).join(', ');
-  const vessel = document.getElementById('vessel').value;
-  const region = document.getElementById('region').value;
-  const role = document.getElementById('role').value;
-  const criteria = document.getElementById('criteria').value.trim();
-  if (!activeChips) { setStatus('search-status', 'Select at least one segment.'); return; }
-
+  const chips = [...document.querySelectorAll('#segments .chip.active')].map(c=>c.textContent).join(', ');
+  const vessel=document.getElementById('vessel').value, region=document.getElementById('region').value;
+  const role=document.getElementById('role').value, criteria=document.getElementById('criteria').value.trim();
+  if (!chips) { setStatus('search-status','Select at least one segment.'); return; }
   document.getElementById('search-btn').disabled = true;
-  setStatus('search-status', 'Researching and qualifying leads...', true);
 
-  const prompt = `${BARANTECH_CONTEXT}
-
-Generate 6 specific, realistic B2B leads for the Cruzo product line.
-Segments: ${activeChips}
-Vessel type: ${vessel}
-Region: ${region}
-Contact role: ${role}
-Criteria: ${criteria || 'none'}
-
-Score 0-100 for Cruzo fit. Estimate boats_per_year based on company size/type. Return ONLY valid JSON array, no markdown:
-[{"name":"Full Name","title":"Job Title","company":"Company Name","email":"first.last@company.com","segment":"label","region":"Country","boats_per_year":"~500/yr","fit":"Why Cruzo fits in one sentence","score":85},...]`;
-
-  try {
-    const data = await callAPI({ model: MODEL, max_tokens: 1200, messages: [{role:'user',content:prompt}] });
-    const text = data.content.map(b => b.text||'').join('');
-    const newLeads = JSON.parse(text.replace(/```json|```/g,'').trim());
-    leads = [...leads, ...newLeads].sort((a,b) => parseInt(b.score)-parseInt(a.score));
-    renderLeads(); updateLeadSelects(); updateMetrics();
-    setStatus('search-status', `${newLeads.length} leads added. Switch to "Leads list" to review.`);
-  } catch(e) { setStatus('search-status', `Error: ${e.message}`); }
+  if (leadSource==='apollo') {
+    setStatus('search-status','Searching Apollo for real contacts...', true);
+    try {
+      const res = await fetch(ENRICH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({segments:chips,vessel,region,role,criteria})});
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      if (!data.leads||!data.leads.length) { setStatus('search-status', data.message||'No results from Apollo. Try different filters or switch to AI mode.'); document.getElementById('search-btn').disabled=false; return; }
+      setStatus('search-status','Scoring leads with AI...', true);
+      const sp = CTX+'\nFor each lead add "fit" (why Cruzo suits them), "score" (0-100), "boats_per_year". Return same JSON array with these fields added. No markdown.\nLeads: '+JSON.stringify(data.leads);
+      const ad = await callAPI({model:MODEL,max_tokens:2000,messages:[{role:'user',content:sp}]});
+      const at = ad.content.map(b=>b.text||'').join('');
+      const scored = JSON.parse(at.replace(/```json|```/g,'').trim());
+      const result = await saveLeads(scored);
+      renderLeads(); updateLeadSelects(); updateMetrics();
+      setStatus('search-status', result.added+' leads added'+(result.skipped?', '+result.skipped+' duplicates skipped':'')+'. Switch to Leads list to review.');
+    } catch(e) { setStatus('search-status','Error: '+e.message); }
+  } else {
+    setStatus('search-status','Generating AI leads...', true);
+    const p = CTX+'\nGenerate 6 realistic B2B leads for Cruzo.\nSegments: '+chips+' | Vessel: '+vessel+' | Region: '+region+' | Role: '+role+' | Criteria: '+(criteria||'none')+'\nScore 0-100. Estimate boats_per_year. Return ONLY valid JSON array:\n[{"name":"","title":"","company":"","email":"","segment":"","region":"","boats_per_year":"","fit":"","score":0,"source":"ai"}]';
+    try {
+      const data = await callAPI({model:MODEL,max_tokens:1500,messages:[{role:'user',content:p}]});
+      const text = data.content.map(b=>b.text||'').join('');
+      const newLeads = JSON.parse(text.replace(/```json|```/g,'').trim());
+      const result = await saveLeads(newLeads);
+      renderLeads(); updateLeadSelects(); updateMetrics();
+      setStatus('search-status', result.added+' leads added'+(result.skipped?', '+result.skipped+' duplicates skipped':'')+'. Switch to Leads list to review.');
+    } catch(e) { setStatus('search-status','Error: '+e.message); }
+  }
   document.getElementById('search-btn').disabled = false;
 }
 
 async function draftEmail() {
-  const idx = document.getElementById('lead-select').value;
-  const product = document.getElementById('product').value;
-  const tone = document.getElementById('tone').value;
-  if (idx === '') { setStatus('email-status', 'Please select a lead.'); return; }
-
-  const lead = leads[parseInt(idx)];
-  currentEmailLead = lead;
-  document.getElementById('email-btn').disabled = true;
-  setStatus('email-status', 'Drafting personalised outreach...', true);
-  document.getElementById('email-output-wrap').style.display = 'none';
-
-  const prompt = `${BARANTECH_CONTEXT}
-
-Write a cold outreach email from Barantech to ${lead.name}, ${lead.title} at ${lead.company} (${lead.region}).
-Product: ${product} | Tone: ${tone} | Fit: ${lead.fit}
-Under 150 words, 3 paragraphs, no placeholders, no markdown, soft CTA for a 15-min call.
-Return ONLY valid JSON: {"subject":"...","body":"..."}`;
-
+  const idx=document.getElementById('lead-select').value, product=document.getElementById('product').value, tone=document.getElementById('tone').value;
+  if (idx==='') { setStatus('email-status','Please select a lead.'); return; }
+  const lead=leads[parseInt(idx)]; currentEmailLead=lead;
+  document.getElementById('email-btn').disabled=true;
+  setStatus('email-status','Drafting personalised outreach...', true);
+  document.getElementById('email-output-wrap').style.display='none';
+  const p = CTX+'\nWrite a cold outreach email from Barantech to '+lead.name+', '+lead.title+' at '+lead.company+' ('+lead.region+').\nProduct: '+product+' | Tone: '+tone+' | Fit: '+lead.fit+'\nUnder 150 words, 3 paragraphs, no placeholders, soft CTA for a 15-min call.\nReturn ONLY valid JSON: {"subject":"...","body":"..."}';
   try {
-    const data = await callAPI({ model: MODEL, max_tokens: 700, messages: [{role:'user',content:prompt}] });
-    const text = data.content.map(b => b.text||'').join('');
+    const data = await callAPI({model:MODEL,max_tokens:700,messages:[{role:'user',content:p}]});
+    const text = data.content.map(b=>b.text||'').join('');
     const email = JSON.parse(text.replace(/```json|```/g,'').trim());
-    currentEmail = email;
-    document.getElementById('email-subject').textContent = email.subject;
-    document.getElementById('email-body').textContent = email.body;
-    document.getElementById('email-output-wrap').style.display = 'block';
-    document.getElementById('send-btn').disabled = false;
-    setStatus('email-status', '');
-  } catch(e) { setStatus('email-status', `Error: ${e.message}`); }
-  document.getElementById('email-btn').disabled = false;
+    currentEmail=email;
+    document.getElementById('email-subject').textContent=email.subject;
+    document.getElementById('email-body').textContent=email.body;
+    document.getElementById('email-output-wrap').style.display='block';
+    document.getElementById('send-btn').disabled=false;
+    setStatus('email-status','');
+  } catch(e) { setStatus('email-status','Error: '+e.message); }
+  document.getElementById('email-btn').disabled=false;
 }
 
-async function sendEmail() {
-  if (!currentEmail || !currentEmailLead) return;
-  document.getElementById('send-btn').disabled = true;
-  setStatus('send-status', 'Sending via Gmail...', true);
-  const prompt = `Send an email on behalf of Barantech marine:
-To: ${currentEmailLead.email}
-Subject: ${currentEmail.subject}
-Body: ${currentEmail.body}`;
-  try {
-    await callAPI({
-      model: MODEL, max_tokens: 300,
-      messages: [{role:'user',content:prompt}],
-      mcp_servers: [{ type: 'url', url: 'https://gmail.mcp.claude.com/mcp', name: 'gmail-mcp' }]
-    });
-    emailedCount++; updateMetrics();
-    setStatus('send-status', `Sent to ${currentEmailLead.email}`);
-  } catch(e) {
-    setStatus('send-status', `Error: ${e.message}`);
-    document.getElementById('send-btn').disabled = false;
-  }
+function openGmail() {
+  if (!currentEmail||!currentEmailLead) return;
+  const to=encodeURIComponent(currentEmailLead.email||'');
+  const su=encodeURIComponent(currentEmail.subject);
+  const bo=encodeURIComponent(currentEmail.body);
+  window.open('https://mail.google.com/mail/?view=cm&to='+to+'&su='+su+'&body='+bo,'_blank');
+  updateStatus(currentEmailLead.id,'contacted');
+  setStatus('send-status','Gmail compose opened. Lead marked as contacted.');
 }
 
 async function scheduleFollowUp() {
-  const idx = document.getElementById('cal-lead-select').value;
-  const date = document.getElementById('cal-date').value.trim();
-  const time = document.getElementById('cal-time').value.trim();
-  const purpose = document.getElementById('cal-purpose').value;
-  if (idx === '') { setStatus('cal-status', 'Please select a lead.'); return; }
-  if (!date || !time) { setStatus('cal-status', 'Please enter date and time.'); return; }
-
-  const lead = leads[parseInt(idx)];
-  document.getElementById('cal-btn').disabled = true;
-  setStatus('cal-status', 'Creating calendar event...', true);
-
-  const prompt = `Create a Google Calendar event:
-Title: ${purpose} — ${lead.name}, ${lead.company} [Barantech]
-Date: ${date} at ${time}
-Attendee: ${lead.email}
-Description: Barantech Cruzo follow-up. Fit: ${lead.fit}`;
-
+  const idx=document.getElementById('cal-lead-select').value;
+  const date=document.getElementById('cal-date').value.trim(), time=document.getElementById('cal-time').value.trim();
+  const purpose=document.getElementById('cal-purpose').value;
+  if (idx==='') { setStatus('cal-status','Please select a lead.'); return; }
+  if (!date||!time) { setStatus('cal-status','Please enter date and time.'); return; }
+  const lead=leads[parseInt(idx)];
+  document.getElementById('cal-btn').disabled=true;
+  setStatus('cal-status','Creating calendar event...', true);
+  const p='Create a Google Calendar event:\nTitle: '+purpose+' - '+lead.name+', '+lead.company+' [Barantech]\nDate: '+date+' at '+time+'\nAttendee: '+lead.email+'\nDescription: Barantech Cruzo follow-up. Fit: '+lead.fit;
   try {
-    await callAPI({
-      model: MODEL, max_tokens: 300,
-      messages: [{role:'user',content:prompt}],
-      mcp_servers: [{ type: 'url', url: 'https://gcal.mcp.claude.com/mcp', name: 'gcal-mcp' }]
-    });
-    followUps.push({ lead, date, time, purpose });
-    renderFollowUps();
-    setStatus('cal-status', 'Event created in Google Calendar.');
-    document.getElementById('cal-date').value = '';
-    document.getElementById('cal-time').value = '';
-  } catch(e) { setStatus('cal-status', `Error: ${e.message}`); }
-  document.getElementById('cal-btn').disabled = false;
+    await callAPI({model:MODEL,max_tokens:300,messages:[{role:'user',content:p}],mcp_servers:[{type:'url',url:'https://gcal.mcp.claude.com/mcp',name:'gcal-mcp'}]});
+    followUps.push({lead,date,time,purpose}); renderFollowUps();
+    setStatus('cal-status','Event created in Google Calendar.');
+    document.getElementById('cal-date').value=''; document.getElementById('cal-time').value='';
+  } catch(e) { setStatus('cal-status','Error: '+e.message); }
+  document.getElementById('cal-btn').disabled=false;
 }
 
 function renderFollowUps() {
-  const el = document.getElementById('cal-list');
-  if (!followUps.length) { el.innerHTML = '<div class="empty" style="padding:1.5rem;">No follow-ups scheduled yet.</div>'; return; }
-  el.innerHTML = followUps.map(f => `
-    <div class="cal-row">
-      <div>
-        <div class="cal-name">${f.lead.name} — ${f.lead.company}</div>
-        <div class="cal-detail">${f.purpose} · ${f.date} at ${f.time}</div>
-      </div>
-      <span class="tag">scheduled</span>
-    </div>`).join('');
+  const el=document.getElementById('cal-list');
+  if (!followUps.length) { el.innerHTML='<div class="empty" style="padding:1.5rem">No follow-ups scheduled yet.</div>'; return; }
+  el.innerHTML=followUps.map(f=>'<div class="cal-row"><div><div class="cal-name">'+f.lead.name+' - '+f.lead.company+'</div><div class="cal-detail">'+f.purpose+' &middot; '+f.date+' at '+f.time+'</div></div><span class="tag">scheduled</span></div>').join('');
 }
 
 function exportCSV() {
-  if (!leads.length) { setStatus('export-status', 'No leads to export yet.'); return; }
-  const headers = ['Name', 'Title', 'Company', 'Email', 'Segment', 'Region', 'Boats per year', 'Why Cruzo fits', 'Score'];
-  const rows = leads.map(l => [
-    l.name, l.title, l.company, l.email || '',
-    l.segment || '', l.region || '', l.boats_per_year || '',
-    l.fit, l.score
-  ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
-  const csv = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `barantech-leads-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  setStatus('export-status', `${leads.length} leads exported.`);
-  setTimeout(() => setStatus('export-status', ''), 3000);
+  if (!leads.length) { setStatus('export-status','No leads to export yet.'); return; }
+  const headers=['Name','Title','Company','Email','Segment','Region','Boats per year','Why Cruzo fits','Score','Status','Source','LinkedIn','Website'];
+  const rows=leads.map(l=>[l.name,l.title,l.company,l.email||'',l.segment||'',l.region||'',l.boats_per_year||'',l.fit||'',l.score||'',l.status||'new',l.source||'ai',l.linkedin||'',l.website||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download='barantech-leads-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+  setStatus('export-status',leads.length+' leads exported.');
+  setTimeout(()=>setStatus('export-status',''),3000);
 }
 </script>
 </body>
