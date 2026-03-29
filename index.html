@@ -45,7 +45,7 @@
   }
 
   .container {
-    max-width: 860px;
+    max-width: 1100px;
     margin: 0 auto;
   }
 
@@ -70,24 +70,7 @@
   }
   header .brand-text h1 { font-size: 17px; font-weight: 600; color: var(--text); }
 
-  .api-bar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
-  .api-bar input {
-    font-family: var(--font-mono); font-size: 12px;
-    padding: 7px 12px; border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-md);
-    background: var(--bg); color: var(--text);
-    width: 260px;
-  }
-  .api-bar input::placeholder { color: var(--text-tertiary); }
-  .api-bar .save-btn {
-    padding: 7px 14px; border-radius: var(--radius-md); font-size: 13px;
-    font-weight: 500; cursor: pointer; font-family: var(--font);
-    background: var(--text); color: var(--bg); border: none;
-  }
-  .api-bar .save-btn:hover { opacity: 0.85; }
-  .api-status { font-size: 12px; color: var(--text-tertiary); }
+
 
   .panel {
     background: var(--bg);
@@ -261,11 +244,7 @@
         <h1>Cruzo Lead Generation Agent</h1>
       </div>
     </div>
-    <div class="api-bar">
-      <input type="password" id="api-key-input" placeholder="Paste Anthropic API key (sk-ant-...)">
-      <button class="save-btn" onclick="saveKey()">Save key</button>
-      <span class="api-status" id="api-status"></span>
-    </div>
+
   </header>
 
   <div class="panel">
@@ -336,6 +315,10 @@
         <div class="metric"><div class="metric-label">Total leads</div><div class="metric-value" id="m-total">0</div></div>
         <div class="metric"><div class="metric-label">High fit (75+)</div><div class="metric-value" id="m-high">0</div></div>
         <div class="metric"><div class="metric-label">Emailed</div><div class="metric-value" id="m-emailed">0</div></div>
+      </div>
+      <div class="action-row" style="margin-bottom: 12px;">
+        <button class="btn" id="export-btn" onclick="exportCSV()">Export to CSV ↓</button>
+        <div class="status-msg" id="export-status"></div>
       </div>
       <div class="leads-wrap" id="leads-container">
         <div class="empty">No leads yet — use "Find leads" to generate your first batch.</div>
@@ -422,7 +405,7 @@
 <script>
 const PROXY = '/api/proxy';
 const MODEL = 'claude-sonnet-4-20250514';
-let apiKey = localStorage.getItem('bt_api_key') || '';
+
 let leads = [], emailedCount = 0, currentEmail = null, currentEmailLead = null, followUps = [];
 
 const BARANTECH_CONTEXT = `Barantech (marine.barantech.com) makes the Cruzo Boat Control System — a smart boat control ecosystem including:
@@ -435,20 +418,7 @@ const BARANTECH_CONTEXT = `Barantech (marine.barantech.com) makes the Cruzo Boat
 - Windlass Switch: marine-grade piezo switch for anchor windlass
 Ideal customers: boat manufacturers, yacht builders, OEMs, refit yards, marine system integrators, charter operators, marine dealers. Supports new builds and retrofit. Key differentiators: premium aesthetics, NMEA 2000 native, IP66-rated, compatible with Garmin EmpirBus / CZone / Raymarine, fully customisable.`;
 
-window.onload = () => {
-  if (apiKey) {
-    document.getElementById('api-key-input').value = apiKey;
-    document.getElementById('api-status').textContent = 'Key loaded';
-  }
-};
 
-function saveKey() {
-  apiKey = document.getElementById('api-key-input').value.trim();
-  if (!apiKey) { document.getElementById('api-status').textContent = 'Please paste a key'; return; }
-  localStorage.setItem('bt_api_key', apiKey);
-  document.getElementById('api-status').textContent = 'Saved ✓';
-  setTimeout(() => document.getElementById('api-status').textContent = '', 2000);
-}
 
 function switchTab(t) {
   document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', ['search','leads','email','calendar'][i]===t));
@@ -481,22 +451,25 @@ function renderLeads() {
   if (!leads.length) { c.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
   c.innerHTML = `<table>
     <thead><tr>
-      <th style="width:20%">Contact</th>
-      <th style="width:20%">Company</th>
-      <th style="width:14%">Segment</th>
-      <th style="width:13%">Region</th>
-      <th style="width:24%">Why Cruzo fits</th>
-      <th style="width:9%">Score</th>
+      <th style="width:16%">Contact</th>
+      <th style="width:14%">Company</th>
+      <th style="width:16%">Email</th>
+      <th style="width:11%">Segment</th>
+      <th style="width:9%">Region</th>
+      <th style="width:9%">Boats/yr</th>
+      <th style="width:18%">Why Cruzo fits</th>
+      <th style="width:7%">Score</th>
     </tr></thead>
     <tbody>${leads.map(l => `<tr>
       <td>
         <div style="font-weight:500;">${l.name}</div>
         <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">${l.title}</div>
-        <div style="font-size:11px;color:var(--text-tertiary);margin-top:1px;">${l.email||''}</div>
       </td>
-      <td>${l.company}</td>
+      <td style="font-size:13px;">${l.company}</td>
+      <td style="font-size:12px;color:var(--text-secondary);word-break:break-all;">${l.email||'—'}</td>
       <td><span class="tag">${l.segment||''}</span></td>
       <td style="font-size:12px;">${l.region||''}</td>
+      <td style="font-size:12px;text-align:center;">${l.boats_per_year||'—'}</td>
       <td style="font-size:12px;line-height:1.5;">${l.fit}</td>
       <td>${scoreBadge(l.score)}</td>
     </tr>`).join('')}</tbody>
@@ -504,11 +477,10 @@ function renderLeads() {
 }
 
 async function callAPI(body) {
-  if (!apiKey) throw new Error('No API key — paste your key at the top and click Save');
   const res = await fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...body, _apiKey: apiKey })
+    body: JSON.stringify(body)
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -537,8 +509,8 @@ Region: ${region}
 Contact role: ${role}
 Criteria: ${criteria || 'none'}
 
-Score 0-100 for Cruzo fit. Return ONLY valid JSON array, no markdown:
-[{"name":"Full Name","title":"Job Title","company":"Company Name","email":"first.last@company.com","segment":"label","region":"Country","fit":"Why Cruzo fits in one sentence","score":85},...]`;
+Score 0-100 for Cruzo fit. Estimate boats_per_year based on company size/type. Return ONLY valid JSON array, no markdown:
+[{"name":"Full Name","title":"Job Title","company":"Company Name","email":"first.last@company.com","segment":"label","region":"Country","boats_per_year":"~500/yr","fit":"Why Cruzo fits in one sentence","score":85},...]`;
 
   try {
     const data = await callAPI({ model: MODEL, max_tokens: 1200, messages: [{role:'user',content:prompt}] });
@@ -650,6 +622,26 @@ function renderFollowUps() {
       </div>
       <span class="tag">scheduled</span>
     </div>`).join('');
+}
+
+function exportCSV() {
+  if (!leads.length) { setStatus('export-status', 'No leads to export yet.'); return; }
+  const headers = ['Name', 'Title', 'Company', 'Email', 'Segment', 'Region', 'Boats per year', 'Why Cruzo fits', 'Score'];
+  const rows = leads.map(l => [
+    l.name, l.title, l.company, l.email || '',
+    l.segment || '', l.region || '', l.boats_per_year || '',
+    l.fit, l.score
+  ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `barantech-leads-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus('export-status', `${leads.length} leads exported.`);
+  setTimeout(() => setStatus('export-status', ''), 3000);
 }
 </script>
 </body>
