@@ -10,6 +10,7 @@ async function getDb() {
       segment TEXT, region TEXT, boats_per_year TEXT,
       fit TEXT, score INTEGER DEFAULT 0, status TEXT DEFAULT 'new',
       source TEXT DEFAULT 'ai', linkedin TEXT, website TEXT,
+      hubspot_id TEXT, hubspot_url TEXT,
       added TIMESTAMPTZ DEFAULT NOW()
     )
   `;
@@ -41,11 +42,12 @@ module.exports = async function handler(req, res) {
         `;
         if (existing.length > 0) { skipped++; continue; }
         await sql`
-          INSERT INTO leads (id, name, title, company, email, segment, region, boats_per_year, fit, score, status, source, linkedin, website)
+          INSERT INTO leads (id, name, title, company, email, segment, region, boats_per_year, fit, score, status, source, linkedin, website, hubspot_id, hubspot_url)
           VALUES (${id}, ${l.name||''}, ${l.title||''}, ${l.company||''}, ${l.email||''},
                   ${l.segment||''}, ${l.region||''}, ${l.boats_per_year||''},
                   ${l.fit||''}, ${parseInt(l.score)||0}, ${'new'},
-                  ${l.source||'ai'}, ${l.linkedin||''}, ${l.website||''})
+                  ${l.source||'ai'}, ${l.linkedin||''}, ${l.website||''},
+                  ${l.hubspot_id||null}, ${l.hubspot_url||null})
         `;
         added++;
       }
