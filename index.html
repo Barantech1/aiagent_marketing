@@ -81,6 +81,12 @@
   .filter-input:focus { border-color: var(--text); }
   .filter-select { font-family: var(--font); font-size: 13px; padding: 7px 10px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text); outline: none; cursor: pointer; }
   .results-count { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+  .hs-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+  .hs-found { background: #EAF3DE; color: #3B6D11; }
+  .hs-not-found { background: var(--bg-secondary); color: var(--text-tertiary); }
+  .hs-checking { background: var(--bg-secondary); color: var(--text-tertiary); }
+  .hs-add-btn { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 0.5px solid rgba(24,95,165,0.4); color: var(--blue); background: transparent; cursor: pointer; font-family: var(--font); margin-top: 3px; }
+  .hs-add-btn:hover { background: var(--blue-bg); }
 
 
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
@@ -539,6 +545,7 @@ function renderLeads() {
     +'<th style="width:7%"><div class="th-inner" onclick="sortBy(\'score\')">Score<span class="sort-icon"></span></div><select id="cf-score" class="col-filter-select" onchange="renderLeads()"><option value="0">All</option><option value="75" '+( fScore==="75"?"selected":"")+'>75+</option><option value="50" '+( fScore==="50"?"selected":"")+'>50+</option></select></th>'
     +'<th style="width:9%"><div class="th-inner" onclick="sortBy(\'status\')">Status<span class="sort-icon"></span></div><select id="cf-status" class="col-filter-select" onchange="renderLeads()"><option value="">All</option><option value="new" '+( fStatus==="new"?"selected":"")+'>New</option><option value="contacted" '+( fStatus==="contacted"?"selected":"")+'>Contacted</option><option value="won" '+( fStatus==="won"?"selected":"")+'>Won</option><option value="lost" '+( fStatus==="lost"?"selected":"")+'>Lost</option></select></th>'
     +'<th style="width:4%"><select id="cf-source" class="col-filter-select" onchange="renderLeads()" title="Source"><option value="">All</option><option value="apollo" '+( fSource==="apollo"?"selected":"")+'>Apollo</option><option value="ai" '+( fSource==="ai"?"selected":"")+'>AI</option></select></th>'
+    +'<th style="width:8%">HubSpot</th>'
     +'</tr></thead><tbody>'
     +filtered.map(function(l) {
       const domain = (l.website||'').replace(/https?:\/\//,'').split('/')[0];
@@ -566,6 +573,7 @@ function renderLeads() {
         +'<td style="font-size:12px;line-height:1.5">'+(l.fit||'')+'</td>'
         +'<td>'+scoreBadge(l.score)+'</td>'
         +'<td>'+statusSelect(l.status||'new', l.id)+'</td>'
+        +'<td id="hs-cell-'+l.id+'">'+hubspotCell(l)+'</td>'
         +'<td><button class="btn btn-sm btn-danger" onclick="deleteLead(\''+l.id+'\')">&#x2715;</button></td>'
         +'</tr>';
     }).join('')
@@ -598,7 +606,7 @@ async function findEmail(id, domain, firstName, lastName) {
 async function loadLeads() {
   try {
     const res = await fetch(LEADS_DB);
-    if (res.ok) { leads = await res.json(); renderLeads(); updateLeadSelects(); updateMetrics(); }
+    if (res.ok) { leads = await res.json(); renderLeads(); updateLeadSelects(); updateMetrics(); checkAllHubSpot(); }
   } catch(e) { console.log('DB unavailable'); }
 }
 
@@ -733,6 +741,77 @@ function renderFollowUps() {
   const el=document.getElementById('cal-list');
   if (!followUps.length) { el.innerHTML='<div class="empty" style="padding:1.5rem">No follow-ups scheduled yet.</div>'; return; }
   el.innerHTML=followUps.map(f=>'<div class="cal-row"><div><div class="cal-name">'+f.lead.name+' - '+f.lead.company+'</div><div class="cal-detail">'+f.purpose+' &middot; '+f.date+' at '+f.time+'</div></div><span class="tag">scheduled</span></div>').join('');
+}
+
+function hubspotCell(l) {
+  if (l.hubspot_id) {
+    var url = l.hubspot_url || "https://app.hubspot.com/contacts/"+l.hubspot_id;
+    return '<a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a>';
+  }
+  if (l._hs_checking) return '<span class="hs-badge hs-checking">Checking...</span>';
+  return '<span class="hs-badge hs-not-found">Not in HubSpot</span>'
+    +'<button class="hs-add-btn" onclick="addToHubSpot(\''+l.id+'\')">+ Add</button>';
+}
+
+async function checkAllHubSpot() {
+  var toCheck = leads.filter(function(l) { return !l.hubspot_id; });
+  if (!toCheck.length) return;
+  // Mark all as checking
+  toCheck.forEach(function(l) { l._hs_checking = true; });
+  renderLeads();
+  // Check in batches of 3 to avoid rate limits
+  for (var i = 0; i < toCheck.length; i += 3) {
+    var batch = toCheck.slice(i, i+3);
+    await Promise.all(batch.map(function(lead) { return checkOneHubSpot(lead); }));
+  }
+  renderLeads();
+}
+
+async function checkOneHubSpot(lead) {
+  try {
+    var res = await fetch("/api/hubspot", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ action: "check", lead: lead })
+    });
+    var data = await res.json();
+    lead._hs_checking = false;
+    if (data.found) {
+      lead.hubspot_id  = data.hubspot_id;
+      lead.hubspot_url = data.hubspot_url;
+      // Persist to DB
+      fetch("/api/leads", { method:"PATCH", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ id: lead.id, hubspot_id: data.hubspot_id, hubspot_url: data.hubspot_url }) });
+    }
+  } catch(e) { lead._hs_checking = false; }
+}
+
+async function addToHubSpot(id) {
+  var lead = leads.find(function(l) { return l.id === id; });
+  if (!lead) return;
+  var cell = document.getElementById("hs-cell-"+id);
+  if (cell) cell.innerHTML = '<span class="hs-badge hs-checking">Adding...</span>';
+  try {
+    var res = await fetch("/api/hubspot", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ action: "create", lead: lead })
+    });
+    var data = await res.json();
+    if (data.created || data.already_exists) {
+      lead.hubspot_id  = data.hubspot_id;
+      lead.hubspot_url = data.hubspot_url;
+      // Persist to DB
+      await fetch("/api/leads", { method:"PATCH", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ id: lead.id, hubspot_id: data.hubspot_id, hubspot_url: data.hubspot_url }) });
+      if (cell) {
+        var url = data.hubspot_url || "https://app.hubspot.com/contacts/"+data.hubspot_id;
+        cell.innerHTML = '<a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a>';
+      }
+    } else {
+      if (cell) cell.innerHTML = '<span class="hs-badge hs-not-found">Failed</span><button class="hs-add-btn" onclick="addToHubSpot(\''+id+'\')">Retry</button>';
+    }
+  } catch(e) {
+    if (cell) cell.innerHTML = '<span class="hs-badge hs-not-found">Error</span>';
+  }
 }
 
 function exportCSV() {
