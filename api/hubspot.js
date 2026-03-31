@@ -10,6 +10,8 @@ module.exports = async function handler(req, res) {
   if (!hsKey) return res.status(500).json({ error: "HUBSPOT_API_KEY not set" });
 
   const { action, lead } = req.body;
+
+  // HubSpot Personal Access Keys use Bearer token auth
   const headers = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${hsKey}`,
@@ -18,36 +20,31 @@ module.exports = async function handler(req, res) {
   // CHECK — search for existing contact by email, then by name+company
   if (action === "check") {
     try {
-      // 1. Search by email first
+      // 1. Search by email
       if (lead.email) {
-        const searchRes = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
-          method: "POST",
-          headers,
+        const r = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
+          method: "POST", headers,
           body: JSON.stringify({
             filterGroups: [{ filters: [{ propertyName: "email", operator: "EQ", value: lead.email }] }],
-            properties: ["firstname", "lastname", "email", "company", "jobtitle", "hs_object_id"],
+            properties: ["firstname", "lastname", "email", "company", "hs_object_id"],
             limit: 1,
           }),
         });
-        const searchData = await searchRes.json();
-        if (searchData.total > 0) {
-          const contact = searchData.results[0];
-          return res.status(200).json({
-            found: true,
-            hubspot_id: contact.id,
-            hubspot_url: `https://app.hubspot.com/contacts/${contact.properties.hs_object_id || contact.id}`,
-          });
+        const d = await r.json();
+        console.log("HubSpot check by email status:", r.status, "total:", d.total, "error:", d.message||"none");
+        if (d.total > 0) {
+          const c = d.results[0];
+          return res.status(200).json({ found: true, hubspot_id: c.id, hubspot_url: `https://app.hubspot.com/contacts/${c.id}` });
         }
       }
 
-      // 2. Search by name + company if no email match
+      // 2. Search by name
       if (lead.name) {
         const parts = lead.name.trim().split(" ");
         const firstName = parts[0] || "";
-        const lastName = parts.slice(1).join(" ") || "";
-        const nameRes = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
-          method: "POST",
-          headers,
+        const lastName  = parts.slice(1).join(" ") || "";
+        const r = await fetch("https://api.hubapi.com/crm/v3/objects/contacts/search", {
+          method: "POST", headers,
           body: JSON.stringify({
             filterGroups: [{
               filters: [
@@ -59,18 +56,14 @@ module.exports = async function handler(req, res) {
             limit: 5,
           }),
         });
-        const nameData = await nameRes.json();
-        // Filter by company if we have it
-        if (nameData.total > 0) {
+        const d = await r.json();
+        console.log("HubSpot check by name status:", r.status, "total:", d.total, "error:", d.message||"none");
+        if (d.total > 0) {
           const match = lead.company
-            ? nameData.results.find(c => (c.properties.company||"").toLowerCase().includes(lead.company.toLowerCase()))
-            : nameData.results[0];
+            ? d.results.find(c => (c.properties.company||"").toLowerCase().includes(lead.company.toLowerCase()))
+            : d.results[0];
           if (match) {
-            return res.status(200).json({
-              found: true,
-              hubspot_id: match.id,
-              hubspot_url: `https://app.hubspot.com/contacts/${match.properties.hs_object_id || match.id}`,
-            });
+            return res.status(200).json({ found: true, hubspot_id: match.id, hubspot_url: `https://app.hubspot.com/contacts/${match.id}` });
           }
         }
       }
@@ -89,47 +82,48 @@ module.exports = async function handler(req, res) {
       const firstName = parts[0] || "";
       const lastName  = parts.slice(1).join(" ") || "";
 
-      const createRes = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          properties: {
-            firstname:        firstName,
-            lastname:         lastName,
-            email:            lead.email        || "",
-            company:          lead.company      || "",
-            jobtitle:         lead.title        || "",
-            phone:            "",
-            website:          lead.website      || "",
-            linkedin_bio:     lead.linkedin     || "",
-            city:             lead.region       || "",
-            hs_lead_status:   "NEW",
-            description:      lead.fit          || "",
-          }
-        }),
+      const properties = {
+        firstname:  firstName,
+        lastname:   lastName,
+        jobtitle:   lead.title   || "",
+        company:    lead.company || "",
+        website:    lead.website || "",
+      };
+      if (lead.email)    properties.email    = lead.email;
+      if (lead.region)   properties.city     = lead.region;
+      if (lead.fit)      properties.description = lead.fit;
+      if (lead.linkedin) properties.linkedin_bio = lead.linkedin;
+
+      const r = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
+        method: "POST", headers,
+        body: JSON.stringify({ properties }),
       });
 
-      const createData = await createRes.json();
-      if (!createRes.ok) {
-        // Handle duplicate contact gracefully
-        if (createData.message && createData.message.includes("Contact already exists")) {
-          const existingId = createData.message.match(/ID: (\d+)/)?.[1];
-          return res.status(200).json({
-            created: false,
-            already_exists: true,
-            hubspot_id: existingId,
-            hubspot_url: existingId ? `https://app.hubspot.com/contacts/${existingId}` : null,
-          });
-        }
-        return res.status(200).json({ created: false, error: createData.message });
+      const d = await r.json();
+      console.log("HubSpot create status:", r.status, "id:", d.id, "error:", d.message||"none");
+
+      if (r.status === 409 || (d.message && d.message.toLowerCase().includes("already exists"))) {
+        // Contact exists — extract ID from error and return it
+        const existingId = d.message?.match(/vid=(\d+)/)?.[1] || d.message?.match(/ID: (\d+)/)?.[1];
+        return res.status(200).json({
+          created: false,
+          already_exists: true,
+          hubspot_id: existingId || null,
+          hubspot_url: existingId ? `https://app.hubspot.com/contacts/${existingId}` : null,
+        });
+      }
+
+      if (!r.ok) {
+        return res.status(200).json({ created: false, error: d.message || `HTTP ${r.status}` });
       }
 
       return res.status(200).json({
         created: true,
-        hubspot_id: createData.id,
-        hubspot_url: `https://app.hubspot.com/contacts/${createData.id}`,
+        hubspot_id: d.id,
+        hubspot_url: `https://app.hubspot.com/contacts/${d.id}`,
       });
     } catch (err) {
+      console.log("HubSpot create error:", err.message);
       return res.status(500).json({ created: false, error: err.message });
     }
   }
