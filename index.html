@@ -42,8 +42,8 @@
   .login-error { font-size: 13px; color: var(--red); margin-top: 8px; min-height: 18px; }
 
   /* APP */
-  #app-screen { display: none; padding: 2rem 1rem; }
-  .container { max-width: 1400px; margin: 0 auto; }
+  #app-screen { display: none; padding: 2rem 1.5rem; }
+  .container { max-width: 100%; margin: 0 auto; }
   header { margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .header-left { display: flex; align-items: center; gap: 12px; }
   .logo-box { width: 36px; height: 36px; border-radius: var(--radius-md); background: #0a0a0a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -81,11 +81,12 @@
   .filter-input:focus { border-color: var(--text); }
   .filter-select { font-family: var(--font); font-size: 13px; padding: 7px 10px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-secondary); color: var(--text); outline: none; cursor: pointer; }
   .results-count { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
-  .hs-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; text-decoration: none; white-space: nowrap; }
+  .hs-cell { display: flex; flex-direction: column; gap: 4px; }
+  .hs-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 99px; font-weight: 500; text-decoration: none; white-space: nowrap; width: fit-content; }
   .hs-found { background: #EAF3DE; color: #3B6D11; }
   .hs-not-found { background: var(--bg-secondary); color: var(--text-tertiary); }
   .hs-checking { background: var(--bg-secondary); color: var(--text-tertiary); }
-  .hs-add-btn { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 0.5px solid rgba(24,95,165,0.4); color: var(--blue); background: transparent; cursor: pointer; font-family: var(--font); margin-top: 3px; }
+  .hs-add-btn { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 0.5px solid rgba(24,95,165,0.4); color: var(--blue); background: transparent; cursor: pointer; font-family: var(--font); white-space: nowrap; width: fit-content; }
   .hs-add-btn:hover { background: var(--blue-bg); }
 
 
@@ -115,7 +116,7 @@
   .metric-value { font-size: 26px; font-weight: 600; }
 
   .leads-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 0.5px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; min-width: 1200px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; min-width: 1300px; }
   thead th { text-align: left; font-weight: 500; font-size: 12px; color: var(--text-secondary); padding: 8px 10px; border-bottom: 0.5px solid var(--border); background: var(--bg-secondary); vertical-align: top; white-space: nowrap; }
   .th-inner { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 5px; }
   .th-inner:hover { color: var(--text); }
@@ -606,7 +607,7 @@ async function findEmail(id, domain, firstName, lastName) {
 async function loadLeads() {
   try {
     const res = await fetch(LEADS_DB);
-    if (res.ok) { leads = await res.json(); renderLeads(); updateLeadSelects(); updateMetrics(); checkAllHubSpot(); }
+    if (res.ok) { leads = await res.json(); renderLeads(); updateLeadSelects(); updateMetrics(); }
   } catch(e) { console.log('DB unavailable'); }
 }
 
@@ -745,12 +746,11 @@ function renderFollowUps() {
 
 function hubspotCell(l) {
   if (l.hubspot_id) {
-    var url = l.hubspot_url || "https://app.hubspot.com/contacts/"+l.hubspot_id;
-    return '<a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a>';
+    var url = l.hubspot_url;
+    if (url) return '<div class="hs-cell"><a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a></div>';
+    return '<div class="hs-cell"><span class="hs-badge hs-found">&#10003; Sent to HubSpot</span></div>';
   }
-  if (l._hs_checking) return '<span class="hs-badge hs-checking">Checking...</span>';
-  return '<span class="hs-badge hs-not-found">Not in HubSpot</span>'
-    +'<button class="hs-add-btn" onclick="addToHubSpot(\''+l.id+'\')">+ Add</button>';
+  return '<div class="hs-cell"><button class="hs-add-btn" onclick="addToHubSpot(\''+l.id+'\')">+ Add to HubSpot</button></div>';
 }
 
 async function checkAllHubSpot() {
@@ -804,10 +804,10 @@ async function addToHubSpot(id) {
         body: JSON.stringify({ id: lead.id, hubspot_id: data.hubspot_id, hubspot_url: data.hubspot_url }) });
       if (cell) {
         var url = data.hubspot_url || "https://app.hubspot.com/contacts/"+data.hubspot_id;
-        cell.innerHTML = '<a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a>';
+        cell.innerHTML = '<div class="hs-cell"><a href="'+url+'" target="_blank" class="hs-badge hs-found">&#10003; In HubSpot</a></div>';
       }
     } else {
-      if (cell) cell.innerHTML = '<span class="hs-badge hs-not-found">Failed</span><button class="hs-add-btn" onclick="addToHubSpot(\''+id+'\')">Retry</button>';
+      if (cell) cell.innerHTML = '<div class="hs-cell"><span class="hs-badge hs-not-found">Failed</span><button class="hs-add-btn" onclick="addToHubSpot(\''+id+'\')">Retry</button></div>';
     }
   } catch(e) {
     if (cell) cell.innerHTML = '<span class="hs-badge hs-not-found">Error</span>';
